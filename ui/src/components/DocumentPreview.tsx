@@ -59,7 +59,7 @@ export function DocumentPreview({ documentId, fileName }: DocumentPreviewProps) 
   };
 
   return (
-    <div ref={targetRef} className="absolute inset-0">
+    <div ref={targetRef as React.RefObject<HTMLDivElement>} className="absolute inset-0">
       {error ? (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <span className="text-sm text-gray-500">Preview not available</span>

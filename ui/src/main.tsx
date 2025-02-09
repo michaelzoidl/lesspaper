@@ -13,6 +13,7 @@ import {
 } from 'kbar'
 import Documents from './pages/documents'
 import Settings from './pages/settings'
+import Logs from './pages/logs'
 
 
 const searchStyle = {
@@ -43,11 +44,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Settings />
+        element: <Documents />
       },
       {
-        path: '/documents',
-        element: <Documents />
+        path: '/logs',
+        element: <Logs />
       },
       {
         path: '/settings',

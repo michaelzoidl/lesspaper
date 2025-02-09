@@ -6,9 +6,10 @@ import { ensureDir } from 'https://deno.land/std@0.210.0/fs/ensure_dir.ts';
 import { PDFDocument } from 'npm:pdf-lib';
 import { currentConfigFolder } from '../lib/config.ts';
 
-const MAGICK_BINARY = join(dirname(import.meta.url), '..', 'bin', 'magick').replace('file:', '');
-
 const logger = createLogger('jobs:generate-pdf-previews');
+
+// Use system-installed ImageMagick
+const MAGICK_BINARY = 'convert';
 
 export async function generatePdfPreviews() {
   try {
@@ -143,11 +144,11 @@ export async function generatePdfPreviews() {
             // Use ImageMagick to convert PDF to JPG
             const command = new Deno.Command(MAGICK_BINARY, {
               args: [
-                '-density', '150',     // Set DPI for good quality
-                '-quality', '90',      // JPG quality
-                tempPdfPath,           // Input file (now contains only one page)
-                outputPath             // Output file
-              ]
+                  '-density', '150',     // Set DPI for good quality
+                  '-quality', '90',      // JPG quality
+                  tempPdfPath,          // Input file
+                  outputPath           // Output file
+                ]
             });
 
             // Wait for conversion to complete

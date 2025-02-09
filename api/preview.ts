@@ -5,11 +5,11 @@ import { ensureDir } from "https://deno.land/std@0.210.0/fs/ensure_dir.ts";
 import { currentConfigFolder } from '../lib/config.ts';
 import { createLogger } from '../lib/logger.ts';
 
-// Get the path to the magick binary relative to this file
-const MAGICK_BINARY = join(dirname(import.meta.url), '..', 'bin', 'magick').replace('file:', '');
-
 const logger = createLogger('api:preview');
 const router = new Router();
+
+// Use system-installed ImageMagick
+const MAGICK_BINARY = 'convert';
 
 router.get("/api/preview/:id", async (ctx) => {
   try {
@@ -39,11 +39,11 @@ router.get("/api/preview/:id", async (ctx) => {
     // Use ImageMagick to resize the image
     const command = new Deno.Command(MAGICK_BINARY, {
       args: [
-        previewPath,        // Input file
-        '-resize', '250x',  // Resize to 200px width, maintain aspect ratio
-        '-quality', '100',   // Good quality
-        resizedPath         // Output file
-      ]
+          previewPath,
+          '-resize', '250x',
+          '-quality', '100',
+          resizedPath
+        ]
     });
 
     const { code, stderr } = await command.output();

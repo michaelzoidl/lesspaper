@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import { useState, memo } from 'react'
 import { Input } from '@/components/ui/input'
-import { Search, Settings, Loader2 } from 'lucide-react'
+import { Search, Settings, Loader2, TerminalSquare } from 'lucide-react'
 import { DocumentPreview } from '@/components/DocumentPreview'
 import { Link } from 'react-router-dom'
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -20,6 +20,13 @@ interface DocumentData {
   meta: {
     size: number;
     lastModified: string;
+    date?: string;
+    type?: string;
+    sender?: string;
+    receiver?: string;
+    emails?: string[];
+    phones?: string[];
+    persons?: string[];
     llm_tags?: string[];
     llm_summary?: string;
   };
@@ -29,7 +36,9 @@ interface DocumentData {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
-function formatDate(dateString: string, format: 'full' | 'monthYear' = 'full') {
+type FormattedDate = string | { month: string; year: string };
+
+function formatDate(dateString: string, format: 'full' | 'monthYear' = 'full'): FormattedDate {
   const date = new Date(dateString);
   if (format === 'monthYear') {
     return {
@@ -69,7 +78,8 @@ function groupDocumentsByDate(documents: DocumentData[]): GroupedDocuments {
       return acc;
     }
 
-    const { month, year } = formatDate(doc.meta.date, 'monthYear');
+    const formatted = formatDate(doc.meta.date, 'monthYear') as { month: string; year: string };
+    const { month, year } = formatted;
     const key = `${year}-${month}`;
 
     if (!acc[key]) {
@@ -121,6 +131,13 @@ const SearchBar = memo(({ value, onChange }: SearchBarProps) => (
         className="border-gray-200 pl-9 focus:border-gray-400 focus:ring-gray-400"
       />
     </div>
+    <Link 
+      to="/logs" 
+      className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+      title="Logs"
+    >
+      <TerminalSquare className="w-5 h-5 text-gray-600" />
+    </Link>
     <Link 
       to="/settings" 
       className="p-2 rounded-md hover:bg-gray-100 transition-colors"
@@ -223,7 +240,7 @@ const DocumentGrid = memo(({ searchQuery, pdfPlugins }: DocumentGridProps) => {
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-gray-500">Modified</span>
-                  <span className="text-gray-900">{formatDate(doc.meta.lastModified)}</span>
+                  <span className="text-gray-900">{formatDate(doc.meta.lastModified).toString()}</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-gray-500">System-Path</span>

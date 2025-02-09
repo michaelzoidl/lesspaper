@@ -1,4 +1,4 @@
-import { Router } from "oak";
+import { Router, Context } from "oak";
 import { join } from "https://deno.land/std@0.208.0/path/mod.ts";
 import { createLogger } from '../lib/logger.ts';
 import { currentConfigFolder } from '../lib/config.ts';
@@ -6,15 +6,16 @@ import { currentConfigFolder } from '../lib/config.ts';
 const logger = createLogger('api:logs');
 const router = new Router();
 
-router.get("/api/logs", async (ctx) => {
+router.get("/api/logs", async (ctx: Context) => {
     try {
         const configPath = await currentConfigFolder();
         const logPath = join(configPath, "system.log");
 
         try {
             const logContent = await Deno.readTextFile(logPath);
+            const lastLines = logContent.split('\n').slice(-500).join('\n');
             ctx.response.headers.set("Content-Type", "text/plain");
-            ctx.response.body = logContent;
+            ctx.response.body = lastLines;
             logger.debug('Retrieved system logs');
         } catch (error) {
             if (error instanceof Deno.errors.NotFound) {
