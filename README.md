@@ -1,8 +1,14 @@
 > ⚠️ **Work in Progress**: This project is currently under active development. Some features need to be updated and tested for cross-machine compatibility. Feel free to try it out, but expect some rough edges!
 
-# 📄 Lesspaper
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/91ca183e-d131-44a8-a81e-99e28ffcdc33">
+    <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/1517659e-db8a-43d9-8229-4890aa487011">
+    <img alt="Lesspaper Logo" src="https://github.com/user-attachments/assets/1517659e-db8a-43d9-8229-4890aa487011" width="400">
+  </picture>
+</div>
 
-[![Open in VS Code](https://img.shields.io/badge/Open%20in%20VS%20Code-blue)](https://code.visualstudio.com)
+# 📄 Lesspaper
 
 > 🚀 Your smart document management system with AI-powered organization!
 
