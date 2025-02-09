@@ -33,7 +33,7 @@ Before you begin, ensure you have the following installed:
 # Install required dependencies
 brew install tesseract
 brew install tesseract-lang
-brew install llm.cpp
+brew install llama-cpp
 brew install imagemagick
 ```
 
