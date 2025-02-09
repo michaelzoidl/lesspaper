@@ -8,8 +8,6 @@
   </picture>
 </div>
 
-# 📄 Lesspaper
-
 > 🚀 Your smart document management system with AI-powered organization!
 
 Lesspaper is an intelligent document management system that automatically organizes your documents using advanced AI capabilities. It uses OCR to extract text from your documents and leverages the DeepSeek LLM for smart categorization and searching.
