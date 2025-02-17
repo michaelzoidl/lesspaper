@@ -6,13 +6,15 @@ import { LogLine } from '@/components/LogLine';
 const fetcher = (url: string) => fetch(url).then(res => res.text());
 
 export default function Logs() {
-  const { data: logs, error, isLoading } = useSWR('/api/logs', fetcher, {
+  const { data: logsRAW, error, isLoading } = useSWR('/api/logs', fetcher, {
     refreshInterval: 5000 // Refresh every 5 seconds
   });
 
+  const logs = JSON.parse(logsRAW || '{}');
+
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex justify-center items-center h-full">
         <div className="text-red-500">Failed to load logs</div>
       </div>
     );
@@ -20,17 +22,19 @@ export default function Logs() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex justify-center items-center h-full">
         <Loader2 className="w-6 h-6 animate-spin" />
       </div>
     );
   }
 
+  console.log(logs)
+
   return (
     <>
       <Link
         to="/"
-        className="inline-flex items-center gap-2 mb-6 text-gray-600 hover:text-gray-900 transition-colors"
+        className="inline-flex gap-2 items-center mb-6 text-gray-600 transition-colors hover:text-gray-900"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
@@ -41,12 +45,11 @@ export default function Logs() {
           <div className="text-sm text-gray-500">Auto-refreshing every 5 seconds</div>
         </div>
 
-        <div className="bg-gray-900 text-gray-100 p-4 rounded-lg w-full h-full">
+        <div className="p-4 w-full h-full text-gray-100 bg-gray-900 rounded-lg">
           <div className="overflow-auto max-h-[1000px] space-y-1">
-            {logs?.split('\n')
-              .filter(Boolean)
+            {logs?.lines
               .reverse()
-              .map((line, index) => (
+              .map((line: string, index: number) => (
                 <LogLine key={index} line={line} />
               ))}
           </div>

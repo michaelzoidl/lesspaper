@@ -77,7 +77,10 @@ export interface ConfigSetting {
 const DEFAULT_SETTINGS: ConfigSetting[] = [
   { setting: 'port', value: '9493' },
   { setting: 'llm_enabled', value: 'false' },
-  { setting: 'llm_model_path', value: '' }
+  { setting: 'llm_model_path', value: '' },
+  { setting: 'llm_provider', value: 'local' }, // local, deepseek, openai
+  { setting: 'openai_api_key', value: '' },
+  { setting: 'deepseek_api_key', value: '' }
 ];
 
 /**

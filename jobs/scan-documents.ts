@@ -14,10 +14,24 @@ export async function scanDocuments() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT UNIQUE NOT NULL,
         meta TEXT NOT NULL,
+        content TEXT,
+        llmProcessed BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
+
+    // Add columns if they don't exist (for existing databases)
+    try {
+      await db.prepare('ALTER TABLE documents ADD COLUMN content TEXT').run();
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+    try {
+      await db.prepare('ALTER TABLE documents ADD COLUMN llmProcessed BOOLEAN DEFAULT FALSE').run();
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
     logger.info('Ensured documents table exists');
     
     // Get all document source paths from config

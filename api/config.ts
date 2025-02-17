@@ -1,4 +1,4 @@
-import { Router } from "oak";
+import { Router, Context } from "oak";
 import { createLogger } from '../lib/logger.ts';
 import { DatabaseConnection } from '../lib/database.ts';
 import { setConfigSetting } from '../lib/config.ts';
@@ -6,8 +6,8 @@ import { setConfigSetting } from '../lib/config.ts';
 const logger = createLogger('api:config');
 const router = new Router();
 
-router
-  .get("/api/config", async (ctx) => {
+export default router
+  .get("/api/config", async (ctx: Context) => {
     try {
       const db = await DatabaseConnection.getInstance();
       const result = await db.prepare(
@@ -22,7 +22,7 @@ router
       ctx.response.body = { error: "Failed to get config settings" };
     }
   })
-  .post("/api/config", async (ctx) => {
+  .post("/api/config", async (ctx: Context) => {
     try {
       const body = ctx.request.body();
       if (body.type !== "json") {
@@ -50,7 +50,7 @@ router
       ctx.response.body = { error: "Failed to update config setting" };
     }
   })
-  .delete("/api/config", async (ctx) => {
+  .delete("/api/config", async (ctx: Context) => {
     try {
       const body = ctx.request.body();
       if (body.type !== "json") {
@@ -73,37 +73,7 @@ router
       
       ctx.response.status = 200;
       ctx.response.body = { message: "Config setting deleted successfully" };
-      logger.info('Deleted config setting', { setting });
-    } catch (error: unknown) {
-      logger.error('Failed to delete config setting', { error: error instanceof Error ? error.message : String(error) });
-      ctx.response.status = 500;
-      ctx.response.body = { error: "Failed to delete config setting" };
-    }
-  })
-  .delete("/api/config", async (ctx) => {
-    try {
-      const body = ctx.request.body();
-      if (body.type !== "json") {
-        ctx.response.status = 400;
-        ctx.response.body = { error: "Request body must be JSON" };
-        return;
-      }
-
-      const { setting } = await body.value;
-      if (!setting) {
-        ctx.response.status = 400;
-        ctx.response.body = { error: "Missing required field: setting" };
-        return;
-      }
-
-      const db = await DatabaseConnection.getInstance();
-      await db.prepare(
-        "DELETE FROM config WHERE setting = ?"
-      ).run(setting);
-      
-      ctx.response.status = 200;
-      ctx.response.body = { message: "Config setting deleted successfully" };
-      logger.info('Deleted config setting', { setting });
+      logger.debug('Deleted config setting', { setting });
     } catch (error: unknown) {
       logger.error('Failed to delete config setting', { error: error instanceof Error ? error.message : String(error) });
       ctx.response.status = 500;
@@ -111,4 +81,4 @@ router
     }
   });
 
-export default router;
+export { router };

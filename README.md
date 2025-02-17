@@ -1,6 +1,6 @@
 > ⚠️ **Work in Progress**: This project is currently under active development. Some features need to be updated and tested for cross-machine compatibility. Feel free to try it out, but expect some rough edges!
 
-<div align="center" style="margin: 3em 0;">
+<div align="center" style="padding: 30px 0">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/91ca183e-d131-44a8-a81e-99e28ffcdc33">
     <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/1517659e-db8a-43d9-8229-4890aa487011">
@@ -21,6 +21,7 @@ Lesspaper is an intelligent document management system that automatically organi
 - 🌐 Clean and modern web interface
 - ⚡ Fast and efficient file processing
 - 🛠️ Zero configuration needed - just run and go
+
 
 ## 🚀 Getting Started
 

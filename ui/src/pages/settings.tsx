@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft } from 'lucide-react'
@@ -14,6 +15,10 @@ interface Config {
   'document-sources': string[]
   llm_enabled?: string
   llm_model_path?: string
+  llm_provider?: string
+  openai_api_key?: string
+  deepseek_api_key?: string
+  llm_custom_context?: string
 }
 
 export default function Settings() {
@@ -38,7 +43,7 @@ export default function Settings() {
             const key = item.setting as keyof Config
             if (key === 'extensions') {
               acc[key] = item.value.split(',')
-            } else if (key === 'storage_path' || key === 'port') {
+            } else if (key === 'storage_path' || key === 'port' || key === 'llm_provider' || key === 'llm_custom_context' || key === 'openai_api_key' || key === 'deepseek_api_key' || key === 'llm_enabled' || key === 'llm_model_path') {
               acc[key] = item.value
             }
           }
@@ -129,16 +134,16 @@ export default function Settings() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container py-6 mx-auto">
       <Link
         to="/"
-        className="inline-flex items-center gap-2 mb-6 text-gray-600 hover:text-gray-900 transition-colors"
+        className="inline-flex gap-2 items-center mb-6 text-gray-600 transition-colors hover:text-gray-900"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
       </Link>
 
-      <Card className="shadow-none border-none">
+      <Card className="border-none shadow-none">
         <CardHeader>
           <CardTitle>Settings</CardTitle>
           <CardDescription>
@@ -199,65 +204,134 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="space-y-4 pt-6 border-t">
+          <div className="pt-6 space-y-4 border-t">
             <div>
-              <CardTitle className="text-lg mb-2">LLM Analysis</CardTitle>
+              <CardTitle className="mb-2 text-lg">LLM Analysis</CardTitle>
               <CardDescription className="mb-4">
                 Enable AI-powered document analysis using a local LLM model
               </CardDescription>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center mb-4 space-x-2">
               <input
                 type="checkbox"
                 id="llm_enabled"
-                className="h-4 w-4"
+                className="w-4 h-4"
                 checked={config.llm_enabled === 'true'}
-                onChange={async (e) => {
+                onChange={(e) => {
                   const newValue = e.target.checked.toString();
                   setConfig({ ...config, llm_enabled: newValue });
-                  
-                  if (e.target.checked) {
-                    try {
-                      const modelUrl = 'https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-GGUF/resolve/main/deepseek-coder-6.7b-instruct.Q4_K_M.gguf';
-                      const response = await fetch('/api/models/download', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ modelUrl })
-                      });
-                      
-                      if (!response.ok) {
-                        throw new Error('Failed to download model');
-                      }
-                      
-                      const result = await response.json();
-                      if (result.modelPath) {
-                        setConfig(prev => ({ ...prev, llm_model_path: result.modelPath }));
-                      }
-                      
-                      toast({
-                        title: "Success",
-                        description: "LLM model downloaded successfully"
-                      });
-                    } catch (error) {
-                      console.error('Failed to download model:', error);
-                      toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: "Failed to download LLM model"
-                      });
-                      // Reset the checkbox
-                      setConfig(prev => ({ ...prev, llm_enabled: 'false' }));
-                    }
-                  }
                 }}
               />
               <Label htmlFor="llm_enabled">Enable LLM Analysis</Label>
             </div>
-            
-            {config.llm_enabled === 'true' && config.llm_model_path && (
-              <div className="text-sm text-gray-500">
-                Model installed at: {config.llm_model_path}
+
+            {config.llm_enabled === 'true' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>LLM Provider</Label>
+                  <select
+                    className="p-2 w-full rounded-md border"
+                    value={config.llm_provider || 'local'}
+                    onChange={(e) => setConfig({ ...config, llm_provider: e.target.value })}
+                  >
+                    <option value="local">Local LLM</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="deepseek">DeepSeek</option>
+                  </select>
+                </div>
+
+                {config.llm_provider === 'local' && (
+                  <div className="space-y-2">
+                    <Label>Local Model Path</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="/path/to/llm/model"
+                        value={config.llm_model_path || ''}
+                        onChange={(e) => setConfig({ ...config, llm_model_path: e.target.value })}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={async () => {
+                          try {
+                            const modelUrl = 'https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-GGUF/resolve/main/deepseek-coder-6.7b-instruct.Q4_K_M.gguf';
+                            const response = await fetch('/api/models/download', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ modelUrl })
+                            });
+                            
+                            if (!response.ok) {
+                              throw new Error('Failed to download model');
+                            }
+                            
+                            const result = await response.json();
+                            if (result.modelPath) {
+                              setConfig(prev => ({ ...prev, llm_model_path: result.modelPath }));
+                            }
+                            
+                            toast({
+                              title: "Success",
+                              description: "LLM model downloaded successfully"
+                            });
+                          } catch (error) {
+                            console.error('Failed to download model:', error);
+                            toast({
+                              variant: "destructive",
+                              title: "Error",
+                              description: "Failed to download LLM model"
+                            });
+                          }
+                        }}
+                      >
+                        Download Model
+                      </Button>
+                    </div>
+                    {config.llm_model_path && (
+                      <div className="text-sm text-gray-500">
+                        Model installed at: {config.llm_model_path}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>Custom Context</Label>
+                  <Textarea
+                    placeholder="Add custom context for document analysis (e.g., company name, document handling preferences)"
+                    value={config.llm_custom_context || ''}
+                    onChange={(e) => setConfig({ ...config, llm_custom_context: e.target.value })}
+                    className="min-h-[100px]"
+                  />
+                  <p className="text-sm text-gray-500">
+                    This context will be used to enhance the LLM's understanding of your documents.
+                  </p>
+                </div>
+
+                {config.llm_provider === 'openai' && (
+                  <div className="space-y-2">
+                    <Label>OpenAI API Key</Label>
+                    <Input
+                      type="password"
+                      placeholder="sk-..."
+                      value={config.openai_api_key || ''}
+                      onChange={(e) => setConfig({ ...config, openai_api_key: e.target.value })}
+                    />
+                  </div>
+                )}
+
+                {config.llm_provider === 'deepseek' && (
+                  <div className="space-y-2">
+                    <Label>DeepSeek API Key</Label>
+                    <Input
+                      type="password"
+                      placeholder="sk-..."
+                      value={config.deepseek_api_key || ''}
+                      onChange={(e) => setConfig({ ...config, deepseek_api_key: e.target.value })}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

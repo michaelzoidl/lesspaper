@@ -8,6 +8,7 @@ import { ocrDocuments } from './jobs/ocr-documents.ts';
 import { generatePdfPreviews } from './jobs/generate-previews.ts';
 // import { nlpAnalyzer } from './jobs/nlp-analyzer.ts';
 import { llmAnalyzer } from './jobs/llm-analyzer.ts';
+// import { embeddingDocuments } from './jobs/embedding-documents.ts';
 
 const logger = createLogger('main');
 
@@ -30,11 +31,13 @@ try {
   const scheduler = JobScheduler.getInstance();
   
   // Add jobs with dependencies
-  scheduler.addJob('scan-documents', scanDocuments, 5000); // Run every 5 seconds
-  scheduler.addJob('generate-pdf-previews', generatePdfPreviews, 15000, ['scan-documents']); // Run after scan-documents
-  scheduler.addJob('ocr-documents', ocrDocuments, 10000, ['generate-pdf-previews']); // Run after previews are generated
-  // scheduler.addJob('nlp-analyzer', nlpAnalyzer, 5000, ['ocr-documents']); // Run NLP analysis after OCR
-  scheduler.addJob('llm-analyzer', llmAnalyzer, 5000, ['ocr-documents']); // Run LLM analysis after OCR
+  // Base document processing pipeline
+  scheduler.addJob('scan-documents', scanDocuments, 5000);
+  scheduler.addJob('generate-pdf-previews', generatePdfPreviews, 5000, ['scan-documents']);
+  scheduler.addJob('ocr-documents', ocrDocuments, 5000, ['generate-pdf-previews']);
+
+  // Analysis pipeline - runs in parallel for each document
+  scheduler.addJob('llm-analyzer', llmAnalyzer, 2000); // Faster interval to catch OCR'd documents quickly
   
   scheduler.start();
   logger.info('Started job scheduler');

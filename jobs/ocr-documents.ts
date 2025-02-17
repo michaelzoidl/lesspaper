@@ -4,9 +4,8 @@ import { join, dirname } from 'https://deno.land/std@0.210.0/path/mod.ts';
 import { exists } from 'https://deno.land/std@0.210.0/fs/exists.ts';
 import { currentConfigFolder } from '../lib/config.ts';
 
-// Get paths to tesseract binary and training data relative to this file
-const TESSERACT_BINARY = join(dirname(import.meta.url), '..', 'bin', 'tesseract').replace('file:', '');
-const TESSERACT_TRAINDATA = join(dirname(import.meta.url), '..', 'bin', 'tesseract-traindata').replace('file:', '');
+// Use system-installed Tesseract from Homebrew
+const TESSERACT_BINARY = 'tesseract';
 
 const logger = createLogger('jobs:ocr-documents');
 
@@ -72,10 +71,11 @@ export async function ocrDocuments() {
               'stdout',            // Output to stdout
               '-l', SUPPORTED_LANGUAGES,  // All supported languages
               '--dpi', '150',      // Match the DPI we used for conversion
-              '--psm', '1',        // Automatic page segmentation with OSD
-              '--tessdata-dir', TESSERACT_TRAINDATA  // Path to training data
+              '--psm', '1'        // Automatic page segmentation with OSD
             ]
           });
+
+          console.log('->', command)
 
           const { success, stdout } = await command.output();
           if (!success) {

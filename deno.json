@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "dev": "DEBUG='*' NO_BROWSER=1 deno run --watch --allow-sys --allow-ffi --allow-run --allow-net --allow-env --allow-write --allow-read main.ts",
-    "compile": "cd ui && npm run build && cd .. && deno compile --output build/lesspaper --allow-sys --allow-ffi --allow-run --allow-net --allow-env --allow-write --allow-read --include=ui/dist --include=bin/tesseract  main.ts"
+    "dev": "DEBUG='*' NO_BROWSER=0 deno run --watch --allow-sys --allow-ffi --allow-run --allow-net --allow-env --allow-write --allow-read main.ts",
+    "compile": "cd ui && npm run build && cd .. && deno compile --output build/lesspaper --allow-sys --allow-ffi --allow-run --allow-net --allow-env --allow-write --allow-read --include=ui/dist main.ts"
   },
   "imports": {
     "oak": "https://deno.land/x/oak@v12.6.1/mod.ts"

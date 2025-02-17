@@ -6,17 +6,28 @@ module.exports = {
     './src/**/*.{ts,tsx}',
   ],
   theme: {
-  	extend: {
-  		transitionProperty: {
-  			width: 'width',
-  			height: 'height',
-  			spacing: 'margin, padding'
-  		},
-  		keyframes: {
-            'marquee': {
-                '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-100%)' }
-            },
+    extend: {
+      transitionProperty: {
+        width: 'width',
+        height: 'height',
+        spacing: 'margin, padding'
+      },
+      backgroundSize: {
+        'shine-size': '200% 200%'
+      },
+      keyframes: {
+        shine: {
+          '0%': { backgroundPosition: '200% 200%' },
+          '100%': { backgroundPosition: '-200% -200%' }
+        },
+  			marquee: {
+  				'0%': {
+  					transform: 'translateX(0)'
+  				},
+  				'100%': {
+  					transform: 'translateX(-100%)'
+  				}
+  			},
   			'accordion-down': {
   				from: {
   					height: 0
@@ -112,10 +123,21 @@ module.exports = {
   				to: {
   					transform: 'translateY(100%)'
   				}
+  			},
+  			shine: {
+  				'0%': {
+  					'background-position': '0% 0%'
+  				},
+  				'50%': {
+  					'background-position': '100% 100%'
+  				},
+  				to: {
+  					'background-position': '0% 0%'
+  				}
   			}
   		},
   		animation: {
-            'marquee': 'marquee 5s linear infinite',
+  			marquee: 'marquee 5s linear infinite',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
   			'fade-in': 'fade-in 0.2s ease-out',
@@ -127,7 +149,8 @@ module.exports = {
   			'slide-out-to-left': 'slide-out-to-left 0.2s ease-out',
   			'slide-out-to-right': 'slide-out-to-right 0.2s ease-out',
   			'slide-out-to-top': 'slide-out-to-top 0.2s ease-out',
-  			'slide-out-to-bottom': 'slide-out-to-bottom 0.2s ease-out'
+  			'slide-out-to-bottom': 'slide-out-to-bottom 0.2s ease-out',
+  			shine: 'shine var(--duration) infinite linear'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

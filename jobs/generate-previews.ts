@@ -146,6 +146,7 @@ export async function generatePdfPreviews() {
               args: [
                   '-density', '150',     // Set DPI for good quality
                   '-quality', '90',      // JPG quality
+                  '-resize', '1024x',     // Set width to 400px, height auto
                   tempPdfPath,          // Input file
                   outputPath           // Output file
                 ]
